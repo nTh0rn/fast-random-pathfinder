@@ -77,7 +77,7 @@ bool checkDir(int dir) {
 				} else {
 					println("Left is blocked");
 				}
-			}
+			} 
 			return false;
 			break;
 		case 3:
