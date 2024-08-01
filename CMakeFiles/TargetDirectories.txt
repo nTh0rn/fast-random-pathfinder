@@ -1,0 +1,3 @@
+C:/Users/brick/source/repos/CraPath/CMakeFiles/CraPath.dir
+C:/Users/brick/source/repos/CraPath/CMakeFiles/edit_cache.dir
+C:/Users/brick/source/repos/CraPath/CMakeFiles/rebuild_cache.dir
