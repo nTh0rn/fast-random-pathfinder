@@ -4,6 +4,7 @@
 #include <stack>
 #include <thread>
 #include <chrono>
+#include <windows.h>
 
 using namespace std;
 
@@ -14,6 +15,8 @@ int mapW = 50, mapH = 50;
 stack <vector <int>> backtrack;
 
 vector <int> last_cell;
+
+bool pMap = false;
 
 void println(string input) {
 	cout << input + "\n";
@@ -38,25 +41,57 @@ void initMap() {
 	}
 }
 
+void clearscreen()
+{
+    HANDLE hOut;
+    COORD Position;
+
+    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    Position.X = 0;
+    Position.Y = 0;
+    SetConsoleCursorPosition(hOut, Position);
+}
+
 void printMap() {
 	string line="";
-	string states[4]={u8"\u2588", ".", "!", " "};
+	string states[4]={u8"\u2588\u2588", ".", u8"\u2588", " "};
 	string screen="";
+	string last_screen="";
+	string cc="";
 
 	while(true) {
-		system("cls");
 		for(int i = 0; i < mapH; i++) {
 			for(int j = 0; j < mapW; j++) {
-				line += states[map[i][j]]+states[map[i][j]];
+				switch(map[i][j]) {
+					case 0:
+						cc = "\033[1;37m";
+						break;
+					case 1:
+						cc = "\033[1;34m";
+						break;
+					case 2:
+						cc = "\033[1;31m";
+						break;
+					case 3:
+						cc = "\033[0;30m";
+						break;
+				}
+				line += cc + u8"\u2588\u2588" + "\033[0m";
+
 			}
 			screen+=line + "\n";
 			line="";
 		}
-		println(screen);
+		if(last_screen != screen || pMap == true) {
+			clearscreen();
+			println(screen);
+			last_screen=screen;
+			pMap = false;
+		}
 		screen="";
 	}
 }
-
 
 bool checkCells(vector <int> anchor, char priority, int sign, int depth) {
 	int x = anchor[0];
@@ -69,18 +104,18 @@ bool checkCells(vector <int> anchor, char priority, int sign, int depth) {
 	if(priority=='x') {
 		dx[0] = sign, dx[1] = sign, dx[2] = sign;
 		dy[0] = -1, dy[1] = 0, dy[2] = 1;
-		dx2 = 2, dy2 = 1;
+		dx2 = depth, dy2 = 1;
 	} else {
 		dy[0] = sign, dy[1] = sign, dy[2] = sign;
 		dx[0] = -1, dx[1] = 0, dx[2] = 1;
-		dx2 = 1, dy2 = 2;
+		dx2 = 1, dy2 = depth;
 	}
 
 	if(map[y+dy[0]][x+dx[0]]==0 && map[y+dy[1]][x+dx[1]]==0 && map[y+dy[2]][x+dx[2]]==0) {
 		if(depth == 1) {
 			return true;
 		} else {
-			if(map[y+dy[0]*dy2][x+dx[0]*dx2]==0 && map[y+dy[1]*dy2][x+dx[1]*dx2]==0 && map[y+dy[2]*dy2][x+dx[2]*dx2]==0) {
+			if(/*map[y+dy[0]*dy2][x+dx[0]*dx2]==0 && */map[y+dy[1]*dy2][x+dx[1]*dx2]==0 /*&& map[y+dy[2]*dy2][x+dx[2]*dx2]==0*/) {
 				return true;
 			}
 		}
@@ -88,34 +123,34 @@ bool checkCells(vector <int> anchor, char priority, int sign, int depth) {
 	return false;
 }
 
-bool checkDir(int dir) {
+bool checkDir(int dir, int depth) {
 	int y = backtrack.top()[0];
 	int x = backtrack.top()[1];
 	switch(dir) {
 		case 0:
 			last_cell={y,x+1};
 			if(x < mapW-3) {
-				return checkCells({x,y}, 'x', 1, 2);
+				return checkCells({x,y}, 'x', 1, depth);
 			}
 			return false;
 			break;
 		case 1:
 			last_cell={y-1,x};
 			if(y > 2) {
-				return checkCells({x,y}, 'y', -1, 2);
+				return checkCells({x,y}, 'y', -1, depth);
 			}
 			return false;
 			break;
 		case 2:
 			last_cell={y,x-1};
 			if(x > 2) {
-				return checkCells({x,y}, 'x', -1, 2);
+				return checkCells({x,y}, 'x', -1, depth);
 			} 
 			break;
 		case 3:
 			last_cell={y+1,x};
 			if(y < mapH-3) {
-				return checkCells({x,y}, 'y', 1, 2);
+				return checkCells({x,y}, 'y', 1, depth);
 			}
 			break;
 	}
@@ -150,7 +185,7 @@ void fillMap(int start=0) {
 					dirss+="}";
 					dprintln("Try: {" + to_string(dirs[dir]) + "} out of: " + dirss);
 					//pause();
-					if(checkDir(dirs[dir])) {
+					if(checkDir(dirs[dir], 2)) {
 						dprintln("{" + to_string(dirs[dir]) + "} dir free, pushing {" + to_string(last_cell[0]) + ", " + to_string(last_cell[1]) + "}");
 						map[top[0]][top[1]]=1;
 						backtrack.push(last_cell);
@@ -172,14 +207,18 @@ void fillMap(int start=0) {
 	}
 }
 
+void CraPath(int start=0) {
+
+}
 
 
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
 	system("chcp 65001 && cls");
-	thread mapLoop(printMap);
 	initMap();
+	thread mapLoop(printMap);
 	fillMap(1);
+	CraPath(1);
 	mapLoop.join();
 	pause();
 	return 0;
