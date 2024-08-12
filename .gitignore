@@ -1,2 +1,7 @@
 Build/
 .vscode/
+vc140.pdb
+CraPath.pdb
+CraPath.obj
+CraPath.ilk
+CraPath.exe
