@@ -22,6 +22,9 @@ vector <int> last_cell;
 //The path found.
 vector <vector <int>> path;
 
+//Default search depth. Modify checkCells() for more options.
+int depth=1;
+
 //The current task above the printMap header.
 
 /*
@@ -225,7 +228,7 @@ void fillMap() {
 			dir = rand() % dirs.size();
 
 			//Check the specified direction
-			if(checkDir(dirs[dir], 1)) {
+			if(checkDir(dirs[dir], depth)) {
 				map[top[0]][top[1]]=1;
 				backtrack.push(last_cell);
 				break;
@@ -249,32 +252,6 @@ void fillMap() {
 	map[mapH-3][mapW-4]=3;
 }
 
-/*
-	@brief Parses the coordinates of a 2D vector.
-
-	This function turns the contents of a two-dimensional vector to a string to be used by a print statement.
-
-	@param input: The 2D vector input.
-
-	@return string of the vector's formatted contents
-
-*/
-string printCoords(vector <vector <int>> input) {
-	string output="{";
-	for(int i = 0; i < input.size(); i++) {
-		output+="{";
-		for(int j = 0; j < input[i].size(); j++) {
-			output += to_string(input[i][j]);
-			output+=", ";
-
-		}
-		output += "}";
-		if(i < input.size()-1) {
-			output+=", ";
-		}
-	}
-	return output+"}";
-}
 
 /*
 	@brief Checks cell visibility and can fill path between cells.
@@ -400,25 +377,6 @@ bool canSee(vector <int> prev, vector <int> next, bool addToPath=false, int pos=
 	}
 	return false;
 	
-}
-
-/*
-	@brief Parses 1D integer vector to string
-
-	This function turns the contents of a one-dimensional vector to a string to be used by a print statement.
-
-	@return string of the vector's formatted contents
-
-*/
-string printVec(vector <int> input) {
-	string output="{";
-	for(int i = 0; i < input.size(); i++) {
-		output += to_string(input[i]);
-		if(i < input.size()-1) {
-			output+=", ";
-		}
-	}
-	return output+"}";
 }
 
 /*
@@ -607,7 +565,7 @@ int main(int argc, char *argv[]) {
 	initMap();
 	fillMap();
 	findPath();
-	walkPath();
+	//walkPath();
 	fillPath();
 	optimizePath();
 	walkPath();
