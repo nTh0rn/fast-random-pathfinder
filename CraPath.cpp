@@ -11,7 +11,7 @@ using namespace std;
 
 //The map grid
 vector <vector <int>> map;
-int mapW = 20, mapH = 20;
+int mapW = 35, mapH = 35;
 
 //Main stack containing the cells visited.
 stack <vector <int>> backtrack;
@@ -24,6 +24,9 @@ vector <vector <int>> path;
 
 //Default search depth. Modify checkCells() for more options.
 int depth=2;
+
+//The current task being done
+string current_task = "";
 
 //The current task above the printMap header.
 
@@ -79,6 +82,11 @@ void clearscreen()
     SetConsoleCursorPosition(hOut, Position);
 }
 
+/*
+	@brief Prints coords from a 2d vector
+
+	This function prints each coordinate held within a vector, used for debugging.
+*/
 void printCoords(vector <vector <int>> input) {
 	string output="{";
 	for(int i = 0; i < input.size(); i++) {
@@ -115,8 +123,8 @@ void printMap() {
 	}
 
 	clearscreen();
+	println(current_task+"\n");
 	println(screen);
-	printCoords(path);
 
 	screen="";
 
@@ -150,13 +158,10 @@ bool checkCells(vector <int> anchor, char priority, int sign, int depth) {
 
 	//Check 3 cells in the specified direction
 	if(map[y+dy[0]][x+dx[0]]==0 && map[y+dy[1]][x+dx[1]]==0 && map[y+dy[2]][x+dx[2]]==0) {
-		if(depth == 1) {
+
+		//Uncommenting the code below will detect the next 3 cells across instead of just the next center cell.
+		if(/*map[y+dy[0]*dy2][x+dx[0]*dx2]==0 &&*/ map[y+dy[1]*dy2][x+dx[1]*dx2]==0 /*&& map[y+dy[2]*dy2][x+dx[2]*dx2]==0*/) {
 			return true;
-		} else {
-			//Uncommenting the code below will detect the next 3 cells across instead of just the next center cell.
-			if(map[y+dy[0]*dy2][x+dx[0]*dx2]==0 && map[y+dy[1]*dy2][x+dx[1]*dx2]==0 && map[y+dy[2]*dy2][x+dx[2]*dx2]==0) {
-				return true;
-			}
 		}
 	}
 	return false;
@@ -220,6 +225,8 @@ void sleep(int time) {
 	This function generates the map using stack backtracking.
 */
 void fillMap() {
+	current_task = "Generating the map";
+	
 	vector <int> top; //The last top of the stack
 	vector <int> dirs; //The available directions
 	int dir; //Chosen direction
@@ -288,8 +295,8 @@ void fillMap() {
 */
 bool canSee(vector <int> prev, vector <int> next, bool addToPath=false, int pos=-1) {
 	//Current coords
-	double x = prev[1]+0.5;
-	double y = prev[0]+0.5;
+	double x = prev[1];
+	double y = prev[0];
 
 	//Previous coords
 	double px=x;
@@ -300,8 +307,8 @@ bool canSee(vector <int> prev, vector <int> next, bool addToPath=false, int pos=
 	double starty=y;
 
 	//Target coords
-	double tx = next[1]+0.5;
-	double ty = next[0]+0.5;
+	double tx = next[1];
+	double ty = next[0];
 
 	//The cells that have been traversed, used for path filling.
 	vector <vector <int>> traversed;
@@ -323,110 +330,43 @@ bool canSee(vector <int> prev, vector <int> next, bool addToPath=false, int pos=
 
 	//Loop until the x and y encounter a wall.
 	while(map[int(y)][int(x)] != 0) {
-		
-		
 
-		println("(" + to_string(x) + "," + to_string(y) + ") " + to_string(tx) + ", " + to_string(ty) + ")");
 		//Check whether the target has been reached.
 		if(int(x) == int(tx) && int(y) == int(ty)) {
 
 			//Check if the current function is being used for path-filling.
 			if(addToPath == true && traversed.size() > 0) {
-
+				
 				//Iterate through traversed cells and add to path.
 				for(int i = 0; i < traversed.size(); i++) {
 					path.insert(path.begin()+pos+i, traversed[i]);
 				}
 			}
-
 			return true;
 		}
 
-
 		//Add the current cell to the traversed cell vector.
-		if((x != px || y != py) && addToPath == true) {
+		if((x != startx || y != starty) && addToPath == true) {
 			traversed.push_back({int(y), int(x)});
 			last_pushed = {int(y), int(x)};
 		}
 		
-
 		//Set the difference between the start and target.
 		dx=tx-x;
 		dy=ty-y;
-
-		//Check whether the right or bottom walls are closer.
-
-		if(dx < 0) {
-			fracx = x-floor(x);
-		} else {
-			fracx = 1-(x-floor(x));
-		}
-
-
-		if(dy < 0) {
-			fracy = y-floor(y);
-		} else {
-			fracy = 1-(y-floor(y));
-		}
-
-		if(dx == 0) {
-			y += (abs(dy)/dy);
-		} else if(dy == 0) {
-			x += (abs(dx)/dx);
-		} else {
-			theta = atan(dy/dx);
 		
-			if(fracy/sin(theta) < fracx/cos(theta)) {
-				x += (fracy/dy)*(dx);
-				y += (fracy)*(abs(dy)/dy);
-			} else {
-				x += (fracx)*(abs(dx)/dx);
-				y += (fracx/dx)*(dy);
-			}
 
-		}
-
-
-		/*
-		if(fracy == 0 || fracx == 0) {
-			println("This shouldn't have happened");
-			cout << "Trying, fracs: " + to_string(fracx) + ", " + to_string(fracy) + " dxy: " + to_string(dx) + ", " + to_string(dy) + "\n";
-			pause();
-		}
-
-		if(addToPath == true) {
-			cout << "Trying, fracs: " + to_string(fracx) + ", " + to_string(fracy) + " dxy: " + to_string(dx) + ", " + to_string(dy) + "\n";
-		}
-
-		if(dx == 0) {
-			y += (abs(dy)/dy);
-		} else if (dy == 0) {
-			x += (abs(dx)/dx);
+		if(abs(dx) >= abs(dy)) {
+			frac = abs(dx);
 		} else {
-
-			fracx=abs(fracx/dx);
-			fracy=abs(fracy/dy);
-			println(to_string(fracx) + ", " + to_string(fracy));
-
-			//Determine which wall is closer and move x & y accordingly.
-			if(fracx <= fracy) {
-				frac = fracx;
-			} else {
-				frac = fracy;
-			}
-
-			if(frac >= dx && frac >= dy) {
-				frac = 1;
-			}
-
-			x += frac*dx;
-			y += frac*dy;
-
-			
+			frac = abs(dy);
 		}
-		*/
 
-		
+		fracx = dx / frac;
+		fracy = dy / frac;
+
+		x += fracx;
+		y += fracy;
 
 		//Checks that the DDA didn't squeeze through a corner.
 		if(int(px) != int(x) && int(py) != int(y) && addToPath == false) {
@@ -452,9 +392,6 @@ bool canSee(vector <int> prev, vector <int> next, bool addToPath=false, int pos=
 
 	}
 
-	if(addToPath == true) {
-		cout << "Returning false\n";
-	}
 	return false;
 	
 }
@@ -506,45 +443,32 @@ void walkPath() {
 	be made.
 */
 void optimizePath() {
-	cout << "Stuck optimizing\n";
-	//Loop until the break is reached.
-	while(true) {
+	current_task = "Optimizing the path";
 
-		optimizePathRestart: ; //Used if the entire search needs to restart.
+	optimizePathRestart: ; //Used if the entire search needs to restart.
 
-		//Iterate forward from the start of the path.
-		for(int i = 0; i < path.size(); i++) {
+	//Iterate forward from the start of the path.
+	for(int i = 0; i < path.size(); i++) {
 
-			//Iterate backwards from the end of the path.
-			for(int j = 1; j < path.size(); j++) {
+		//Iterate backwards from the end of the path.
+		for(int j = 1; j < path.size(); j++) {
 
-				//Makes sure it doesn't check past the forward-moving-cell.
-				if(path.size() - j <= i+1) {
-					break;
-				}
+			//Makes sure it doesn't check past the forward-moving-cell.
+			if(path.size() - j <= i+1) {
+				break;
+			}
 
-				cout << "Stuck optimizing\n";
+			//Checks whether the cells can see eachother.
+			if(canSee(path[i], path[path.size() - j]) || path[i] == path[path.size() - j]) {
 
-				//Checks whether the cells can see eachother.
-				if(canSee(path[i], path[path.size() - j]) || path[i] == path[path.size() - j]) {
-					cout << "Stuck optimizing inside\n";
-					//Erase the cells between 2 cells that see eachother
-					path.erase(path.begin()+i+1, path.begin()+(path.size() - j));
-					goto optimizePathRestart;
-				}
+				//Erase the cells between 2 cells that see eachother
+				path.erase(path.begin()+i+1, path.begin()+(path.size() - j));
+				goto optimizePathRestart;
 			}
 		}
-
-		break; //Reached when no optimizations are found.
-
 	}
+
 }
-
-
-
-
-
-
 
 /*
 	@brief Fills the path between two cells.
@@ -554,17 +478,17 @@ void optimizePath() {
 	using its addToPath flag.
 */
 void fillPath() {
-
+	current_task = "Filling spaces in between nodes";
 	//The change in x and y between two cells.
 	vector <int> dxy = {0,0};
 
 	//Used for vector comparison to ensure cells are non-adjacent.
-	vector <vector <int>> states={{0,1}, {1,0}, {1,1}, {0,0}};
+	vector <vector <int>> states={{0,1}, {1,0}, {1,1}};
 
-	//Loops until break after path has been fully iterated with no changes
-	while(true) {
+	//Whether or not the search is complete
+	bool complete = false;
 
-		fillPathRestart: ; //Used to restart search since path.size() changes regularly.
+	while(complete == false) {
 
 		//Iterate through the path
 		for(int i = 0; i < path.size()-1; i++) {
@@ -572,12 +496,9 @@ void fillPath() {
 			//Define the x/y slope
 			dxy[0]=abs(path[i+1][0]-path[i][0]);
 			dxy[1]=abs(path[i+1][1]-path[i][1]);
-			//cout << "Stuck at" + to_string(i) + " out of " + to_string(path.size()) + " - " + to_string(dxy[0]) + ", " + to_string(dxy[1]) + "\n";
 
-			//println(printCoords(path));
-			//pause();
 			//Checks that the next cell isn't immediately adjacent
-			if(dxy != states[0] && dxy != states[1] && dxy != states[2] && dxy != states[3]) {
+			if(dxy != states[0] && dxy != states[1] && dxy != states[2]) {
 
 				//Uses CanSee for its path filling DDA purposes.
 				if(canSee(path[i], path[i+1], true, i+1)) {
@@ -585,15 +506,15 @@ void fillPath() {
 					//Break if the end of the path has been reached.
 					if(i == path.size()-2) {
 						break;
+						complete = true;
 					}
 					
 					//Restart path filling since path.size() changed.
-					goto fillPathRestart;
+					complete = false;
+					break;
 				}
 			}
 		}
-
-		break; //Reached only if all cells have been filled.
 	}
 
 	return;
@@ -607,7 +528,8 @@ void fillPath() {
 	goal at the bottom right of the map.
 */
 void findPath() {
-
+	current_task = "Finding a path . . .";
+	printMap();
 	vector <int> node = {2 + (rand() % (mapH-3)), 2 + (rand() % (mapW-3))}; //The node to be checked
 	path.push_back({2,2}); //The starting point
 	map[mapH-3][mapW-3]=3; //Sets starting point's color
@@ -648,83 +570,23 @@ void findPath() {
 }
 
 /*
-void findPath() {
-	vector <int> node = {2 + (rand() % (mapH-3)), 2 + (rand() % (mapW-3))}; //The node to be checked
-	path.push_back({2,2}); //The starting point
-	map[mapH-3][mapW-3]=3; //Sets starting point's color
-	vector <int> goal={mapH-3, mapW-3}; //The goal
-	int orig_state=0; //Holds the original color of cells
-
-	vector <int> dirs={0,1,2,3};
-	int dir;
-
-	int dx, dy;
-
-	//Loops until the goal is reached
-	while(path[path.size()-1] != goal) {
-
-		dirs={0,1,2,3};
-
-		//The scary but necessary infinite while loop
-		while(dirs.size() > 0) {
-
-			dir = rand() % dirs.size();
-
-			switch(dir) {
-				case 0:
-					dx=1;
-					dy=0;
-					break;
-				case 1:
-					dx=0;
-					dy=-1;
-					break;
-				case 2:
-					dx=-1;
-					dy=0;
-					break;
-				case 3:
-					dx=0;
-					dy=1;
-					break;
-			}
-
-			node = {path[path.size()-1][0]+dy,path[path.size()-1][1]+dx};
-
-			if(map[node[0]][node[1]] != 0) {
-				path.push_back(node);
-				break;
-			} else {
-				dirs.erase(dirs.begin() + dir);
-			}
-		}
-	}
-
-	//Add goal to the very end of path.
-	path.push_back(goal);
-}
-*/
-
-/*
 	Main function
 
 */
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
 	system("chcp 65001 && cls");
-	initMap();
-	printMap();
-	pause();
-	fillMap();
-	findPath();
-	walkPath();
-	cout << "Starting fill\n";
-	fillPath();
-	cout << "Starting optimization\n";
-	optimizePath();
-	walkPath();
-	fillPath();
-	walkPath();
+	initMap(); //Initialize map size
+	printMap(); //Print empty map
+	pause(); //Wait to start map gen
+	fillMap(); //Generate the map
+	findPath(); //Find a random path
+	walkPath(); //Walk the random path
+	fillPath(); //Fill gaps in between nodes of path
+	optimizePath(); //Optimize node path
+	walkPath(); //Walk optimized path
+	fillPath(); //Fill optimized path
+	walkPath(); //Walk filled optimized path
 	pause();
 	return 0;
 }
