@@ -11,7 +11,7 @@ using namespace std;
 
 //The map grid
 vector <vector <int>> map;
-int mapW = 35, mapH = 35;
+int mapW = 30, mapH = 30;
 
 //Main stack containing the cells visited.
 stack <vector <int>> backtrack;
@@ -159,8 +159,7 @@ bool checkCells(vector <int> anchor, char priority, int sign, int depth) {
 	//Check 3 cells in the specified direction
 	if(map[y+dy[0]][x+dx[0]]==0 && map[y+dy[1]][x+dx[1]]==0 && map[y+dy[2]][x+dx[2]]==0) {
 
-		//Uncommenting the code below will detect the next 3 cells across instead of just the next center cell.
-		if(/*map[y+dy[0]*dy2][x+dx[0]*dx2]==0 &&*/ map[y+dy[1]*dy2][x+dx[1]*dx2]==0 /*&& map[y+dy[2]*dy2][x+dx[2]*dx2]==0*/) {
+		if(map[y+dy[0]*dy2][x+dx[0]*dx2]==0 && map[y+dy[1]*dy2][x+dx[1]*dx2]==0 && map[y+dy[2]*dy2][x+dx[2]*dx2]==0) {
 			return true;
 		}
 	}
@@ -172,7 +171,8 @@ bool checkCells(vector <int> anchor, char priority, int sign, int depth) {
 
 	This function checks a direction at a specific depth, used by checkDir().
 
-	@param time: The number of milliseconds to pause
+	@param dir: The direction to check 0=right 1=up 2=left 3=down
+	@param depth: How far to check
 */
 bool checkDir(int dir, int depth) {
 	int y = backtrack.top()[0];
@@ -316,13 +316,11 @@ bool canSee(vector <int> prev, vector <int> next, bool addToPath=false, int pos=
 	//The difference between the start and target
 	double dx=0;
 	double dy=0;
-	double theta;
 
 	//Used to hold DDA calculations
 	double fracx=0;
 	double fracy=0;
 	double frac;
-	double h;
 
 	//Used for checking corner-skips.
 	vector <int> cc_xy = {0, 0};
@@ -355,7 +353,7 @@ bool canSee(vector <int> prev, vector <int> next, bool addToPath=false, int pos=
 		dx=tx-x;
 		dy=ty-y;
 		
-
+		//DDA traversal
 		if(abs(dx) >= abs(dy)) {
 			frac = abs(dx);
 		} else {
@@ -404,7 +402,7 @@ bool canSee(vector <int> prev, vector <int> next, bool addToPath=false, int pos=
 void walkPath() {
 
 	//Used so the path doesn't happen too fast/slow.
-	int delay = floor(5000/path.size());
+	int delay = int(5000/path.size());
 
 	//Helps speed up long walks.
 	if(path.size() > 1000) {
@@ -489,7 +487,7 @@ void fillPath() {
 	bool complete = false;
 
 	while(complete == false) {
-
+		complete = true;
 		//Iterate through the path
 		for(int i = 0; i < path.size()-1; i++) {
 
@@ -506,7 +504,6 @@ void fillPath() {
 					//Break if the end of the path has been reached.
 					if(i == path.size()-2) {
 						break;
-						complete = true;
 					}
 					
 					//Restart path filling since path.size() changed.
@@ -574,7 +571,7 @@ void findPath() {
 
 */
 int main(int argc, char *argv[]) {
-	srand(time(NULL));
+	srand(int(time(NULL)));
 	system("chcp 65001 && cls");
 	initMap(); //Initialize map size
 	printMap(); //Print empty map
@@ -582,7 +579,7 @@ int main(int argc, char *argv[]) {
 	fillMap(); //Generate the map
 	findPath(); //Find a random path
 	walkPath(); //Walk the random path
-	fillPath(); //Fill gaps in between nodes of path
+	fillPath(); //Fill optimized path
 	optimizePath(); //Optimize node path
 	walkPath(); //Walk optimized path
 	fillPath(); //Fill optimized path
