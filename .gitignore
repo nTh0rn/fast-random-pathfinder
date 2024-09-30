@@ -1,7 +1,7 @@
 Build/
 .vscode/
 vc140.pdb
-CraPath.pdb
-CraPath.obj
-CraPath.ilk
-CraPath.exe
+faster-random-pathfinder.pdb
+faster-random-pathfinder.obj
+faster-random-pathfinder.ilk
+faster-random-pathfinder.exe
