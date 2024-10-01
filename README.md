@@ -38,7 +38,7 @@
 
 <!-- ABOUT -->
 ## About
-Read the in-depth analysis of how Fast Random Pathfinder operates [here](https://www.nthorn.com/articles/fast-random-pathfinder).
+Read an in-depth analysis of this project [here](https://www.nthorn.com/articles/fast-random-pathfinder).
 
 Fast Random Pathfinder is a pathfinding algorithm that, as the name implies, traverses randomly until reaching it's goal. Although random, it is comparibly faster than alternative random pathfinding solutions. Fast Random Pathfinder also iteratively optimizes itself, increasing the odds of finding an optimal path.
 
