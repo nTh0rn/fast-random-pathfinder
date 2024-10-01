@@ -62,7 +62,7 @@ Fast Random Pathfinder relies on `<windows.h>` for visualization, making compila
 ## Usage
 1. Modify any of the following values within `fast-random-pathfinder.cpp`\
    1.1 `mapW` and `mapH` to change map grid size\
-   1.2 `depth` to either 1 or 2 to set the depth of the backtracking maze generation.
+   1.2 `depth` to either `1` or `2` to set the depth of the backtracking maze generation algorithm.
 2. Build to `.exe` using [CMake](https://cmake.org/)
    ```sh
    cmake build .
