@@ -1,11 +1,15 @@
 
 <a id="readme-top"></a>
 <div align="center">
-<h2 align="center">Fast Random Pathfinder</h2>
+<h1 align="center">Fast Random Pathfinder</h1>
 
   <p align="center">
     A fast pathfinder that traverses randomly and self-optimizes.
   </p>
+
+  <p align="center">
+<img src="https://nthorn.com/images/fast-random-pathfinder/optimizeandtraverse.webp" width="300">
+</p>
 </div>
 
 <details>
@@ -67,10 +71,6 @@ Fast Random Pathfinder relies on `<windows.h>` for visualization, making compila
    ```sh
    cmake build .
    ```
-
-<p align="center">
-<img src="https://nthorn.com/images/fast-random-pathfinder/optimizeandtraverse.webp" width="500">
-</p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
