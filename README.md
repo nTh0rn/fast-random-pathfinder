@@ -17,22 +17,13 @@
     <li>
       <a href="#getting-started">Getting started</a>
       <ul>
-        <li><a href="#automatic-installer">Prerequisites</a></li>
+        <li><a href="#prerequisites">Prerequisites</a></li>
       </ul>
       <ul>
-        <li><a href="#manual-installation">Installation</a></li>
+        <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li>
-      <a href="#uninstallation">Installation</a>
-      <ul>
-        <li><a href="#automatic-uninstaller">Automatic Unnstaller</a></li>
-      </ul>
-      <ul>
-        <li><a href="#manual-uninstallation">Manual Unnstallation</a></li>
-      </ul>
-    </li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
